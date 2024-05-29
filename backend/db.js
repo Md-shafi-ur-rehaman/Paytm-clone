@@ -1,5 +1,13 @@
 const mongoose = require("mongoose");
 
+try{
+  mongoose.connect("mongodb://localhost:27017/paytm");
+  console.log("connected to database");
+}
+catch(err){
+  console.log(err)
+}
+
 const userSchema = new mongoose.Schema({
   username: {
     type:String,
@@ -15,6 +23,14 @@ const userSchema = new mongoose.Schema({
     required:true,
     minLength:6
   },
+  mobileNo: {
+    type:Number,
+    required:true,
+    unique:true,
+    trim:true,
+    minLength:10,
+    maxLength:10
+  },
   firstname: {
     type: String,
     required: true,
@@ -29,8 +45,23 @@ const userSchema = new mongoose.Schema({
   }
 })
 
-const user = mongoose.modle("User",userSchema);
+const User = mongoose.model('User', userSchema);
 
-module.export = {
-  User
+const accountSchema = new mongoose.Schema({
+  userId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref:"userId",
+    required:true
+  },
+  balance:{
+    type:Number,
+    required:true,
+  }
+})
+
+const Account = mongoose.model("Account", accountSchema);
+
+module.exports = {
+  User,
+  Account
 }
