@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 try{
-  mongoose.connect("mongodb://localhost:27017/paytm");
+  mongoose.connect("mongodb://localhost:27017/paytm",);
   console.log("connected to database");
 }
 catch(err){
@@ -24,12 +24,12 @@ const userSchema = new mongoose.Schema({
     minLength:6
   },
   mobileNo: {
-    type:Number,
+    type:String,
     required:true,
     unique:true,
     trim:true,
     minLength:10,
-    maxLength:10
+    maxLength:10,
   },
   firstname: {
     type: String,

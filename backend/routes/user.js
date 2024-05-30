@@ -1,5 +1,5 @@
 const express = require("express");
-const zod = require("zod");
+// const zod = require("zod");
 const {User, Account} = require("../db");
 const {authMiddleware} = require("../middlewares/middleware");
 const jwt = require("jsonwebtoken");
@@ -11,16 +11,19 @@ userRouter.get("/",(req,res)=>{
   res.status(200).json({message:"running get route"})
 })
 
-const signupBody = zod.object({
-  username:zod.string().email(),
-  password:zod.string(),
-  firstname:zod.string(),
-  lastname:zod.string()
-})
+// const signupBody = zod.object({
+//   username:zod.string().email(),
+//   password:zod.string(),
+//   // mobileNo:zod.number(),
+//   firstname:zod.string(),
+//   lastname:zod.string()
+// })
+
 userRouter.post("/signup", async (req,res)=>{
-  const { success } = signupBody.safeParse(req.body);
-  const {error} = signupBody.safeParse(req.body);
-  console.log(error);
+  console.log(req.headers);
+  // const { success } = signupBody.safeParse(req.body);
+  // const {error} = signupBody.safeParse(req.body);
+  // console.log(error);
 
   // if(!success){
   //   return res.status(411).json({
@@ -41,6 +44,7 @@ userRouter.post("/signup", async (req,res)=>{
   const user = await User.create({
     username:req.body.username,
     password:req.body.password,
+    mobileNo:req.body.mobileNo,
     firstname:req.body.firstname,
     lastname:req.body.lastname,
   })
@@ -51,7 +55,7 @@ userRouter.post("/signup", async (req,res)=>{
     balance: 1 + Math.random() * 10000
   })
 
-  const token = jwt.sing({
+  const token = jwt.sign({
     userId
   }, JWT_SECRET);
 
@@ -63,30 +67,34 @@ userRouter.post("/signup", async (req,res)=>{
 })
 
 
-const loginBody = zod.object({
-  username:zod.string().email(),
-  password:zod.string()
-})
-userRouter.post("/login", async ()=>{
-  const {success} = loginBody.safeParse(req.body);
-  if(!success){
-    return res.status(411).json({
-      message:"Incorrect inputs"
-    })
-  }
+// const loginBody = zod.object({
+//   username:zod.string().email(),
+//   password:zod.string()
+// })
+
+userRouter.post("/login", async (req, res)=>{
+  console.log(req.headers);
+  // const {success} = loginBody.safeParse(req.body);
+  // if(!success){
+  //   return res.status(411).json({
+  //     message:"Incorrect inputs"
+  //   })
+  // }
+
+
+  // if(!req.body.username || !req.body.password){
+  //   res.status(400).json({message:"please fill all info"});
+  //   return;
+  // }
 
   const user = await User.findOne({
-    username: req.body.username,
-    password: req.body.password
+    username:req.body.username,
+    password:req.body.password,
   })
 
   if(user){
-    const token = jwt.sign({
-      userId:user._id
-    },JWT_SECRET);
-    res.json({
-      token:token
-    })
+    const token = jwt.sign({userId:user._id},JWT_SECRET);
+    res.status(200).json({token:token})
     return;
   }
 
@@ -96,20 +104,20 @@ userRouter.post("/login", async ()=>{
 })
 
 
-const updateBody = zod.object({
-  password:zod.string().optional(),
-  firstname:zod.string().optional(),
-  lastname:zod.string().optional(),
-})
+// const updateBody = zod.object({
+//   password:zod.string().optional(),
+//   firstname:zod.string().optional(),
+//   lastname:zod.string().optional(),
+// })
 
 
 userRouter.put("/",()=>{authMiddleware.authMiddleware()}, async (req, res) => {
-    const { success } = updateBody.safeParse(req.body)
-    if (!success) {
-        res.status(411).json({
-            message: "Error while updating information"
-        })
-    }
+    // const { success } = updateBody.safeParse(req.body)
+    // if (!success) {
+    //     res.status(411).json({
+    //         message: "Error while updating information"
+    //     })
+    // }
 
     await User.updateOne(req.body, {
         _id: req.userId

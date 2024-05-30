@@ -1,6 +1,7 @@
 import react,{useState} from "react";
 import {Link} from "react-router-dom"
 import {Button, Input} from "../components/index";
+import axios from "axios";
 
 function Signin() {
   const [username, setUsername] = useState('');
@@ -8,7 +9,22 @@ function Signin() {
 
   const handleClick = async (e)=> {
     e.preventDefault()
-    console.log("form submiting..")
+    const data = {
+      username,
+      password
+    }
+    if(!data) return;
+    console.log("login form submiting..")
+    try{
+      const response = await axios.post("http://localhost:3000/api/v1/user/login",{
+        username,
+        password
+      });
+      localStorage.setItem("token", response.data.token);
+    }
+    catch(err){
+      console.log(err);
+    }
   }
 
   return(

@@ -1,36 +1,35 @@
 import react, {useState} from "react";
 import {Link} from "react-router-dom"
 import {Button, Input} from "../components/index";
+import axios from 'axios';
 
 
 const Signup = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [mobileNo, setMobileNo] = useState();
+  const [mobileNo, setMobileNo] = useState('');
   const [firstname, setfirstname] = useState('');
   const [lastname, setlastname] = useState('');
 
   const handleClick = async (e)=> {
-    e.preventDefault()
+    e.preventDefault();
     console.log("form submiting..");
-    const signupObj = {
-      username,
-      password,
-      firstname,
-      lastname,
-      mobileNo
-    }
-
     try{
-      const response = await fetch('http:localhost:3000/api/v1/user/signup',{
-        method:'POST',
-        headers:{"Content-Type": "application/json"},
-        body:JSON.stringify(signupObj)
+      const response = await axios.post('http://localhost:3000/api/v1/user/signup',{
+        username,
+        password,
+        firstname,
+        lastname,
+        mobileNo
       });
-      console.log(response.json());
+
+      console.log(response);
+      localStorage.setItem("token", response.data.token);
+      // const resData = await response.json()
+      // console.log(resData)
     }
     catch(err){
-
+      console.log(err);
     }
   }
 
@@ -42,23 +41,23 @@ const Signup = () => {
         <form className="flex-col justify-center items-center p-2">
           <div className="my-1">
             <label>Firstname</label>
-            <Input className="w-full p-1 rounded-md border" type={"text"} value={firstname} onChange={(e)=> setfirstname(e.target.value)} place={"John"}  />
+            <Input className="w-full p-1 rounded-md border" name={"firstname"} type={"text"} value={firstname} onChange={(e)=> setfirstname(e.target.value)} place={"John"}  />
           </div>
           <div className="mb-1">
             <label>Lastname</label>
-            <Input className="w-full p-1 rounded-md border" type={"text"} value={lastname} onChange={(e)=> setlastname(e.target.value)} place={"doe"}  />
+            <Input className="w-full p-1 rounded-md border" name={"lastname"} type={"text"} value={lastname} onChange={(e)=> setlastname(e.target.value)} place={"doe"}  />
           </div>
           <div className="mb-1">
             <label>Mobile number</label>
-            <Input className="w-full p-1 rounded-md border" type={"number"} value={mobileNo} onChange={(e)=> setMobileNo(e.target.value)} place={"9999-888-777"}  />
+            <Input className="w-full p-1 rounded-md border" name={"mobileNo"} type={"text"} value={mobileNo} onChange={(e)=> setMobileNo(e.target.value)} place={"999-8888-999"}  />
           </div>
           <div className="mb-1">
             <label className="">Email</label>
-            <Input className="w-full p-1 rounded-md border" type={"text"} value={username} onChange={(e)=> setUsername(e.target.value)} place={"Johndoe@example.com"}  />
+            <Input className="w-full p-1 rounded-md border" name={"username"} type={"text"} value={username} onChange={(e)=> setUsername(e.target.value)} place={"Johndoe@example.com"}  />
           </div>
           <div className="mb-1">
             <label>Password</label>
-            <Input className="w-full p-1 rounded-md border" type={"password"} value={password} onChange={(e)=> setPassword(e.target.value)} place={""}  />
+            <Input className="w-full p-1 rounded-md border" name={"password"} type={"password"} value={password} onChange={(e)=> setPassword(e.target.value)} place={""}  />
           </div>
 
           <Button className="w-full p-1 rounded-md bg-[#002E6E] text-white my-2" type={"submit"} value={"Submit"} onClick={handleClick}/>
