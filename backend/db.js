@@ -42,7 +42,14 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true,
     maxLength: 50
-  }
+  },
+  pin: {
+    type:String,
+    required:true,
+    trim:true,
+    minLength:4,
+    maxLength:6
+  },
 })
 
 const User = mongoose.model('User', userSchema);

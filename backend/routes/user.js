@@ -31,13 +31,17 @@ userRouter.post("/signup", async (req,res)=>{
   //   })
   // }
 
-  const existingUser = await User.findOne({
+  const existingUserEmail = await User.findOne({
     username: req.body.username
-  })
+  });
 
-  if(existingUser){
+  const existingUserMobileNo = await User.findOne({
+    mobileNo: req.body.mobileNo
+  });
+
+  if(existingUserEmail || existingUserMobileNo){
     return res.status(411).json({
-      message:"Email already taken"
+      message:"Email or mobile Number is registered already"
     })
   }
 
@@ -47,6 +51,7 @@ userRouter.post("/signup", async (req,res)=>{
     mobileNo:req.body.mobileNo,
     firstname:req.body.firstname,
     lastname:req.body.lastname,
+    pin:req.body.pin,
   })
   const userId = user._id;
 
@@ -55,9 +60,7 @@ userRouter.post("/signup", async (req,res)=>{
     balance: 1 + Math.random() * 10000
   })
 
-  const token = jwt.sign({
-    userId
-  }, JWT_SECRET);
+  const token = jwt.sign({userId}, JWT_SECRET);
 
   res.json({
     message:"User created successfully",
@@ -94,7 +97,7 @@ userRouter.post("/login", async (req, res)=>{
 
   if(user){
     const token = jwt.sign({userId:user._id},JWT_SECRET);
-    res.status(200).json({token:token})
+    res.status(200).json({message:"Login success",token:token})
     return;
   }
 
@@ -129,7 +132,7 @@ userRouter.put("/",()=>{authMiddleware.authMiddleware()}, async (req, res) => {
 })
 
 
-userRouter.get("/bulk", async () => {
+userRouter.get("/bulk", async (req,res) => {
   const filter = req.query.filter || "";
 
   const users = await User.find({
@@ -143,9 +146,14 @@ userRouter.get("/bulk", async () => {
         lastname:{
           "$regex" : filter
         }
+      },
+      {
+        mobileNo:filter
       }
      ]
-  })
+
+   }
+  )
 
   res.json({
     user:users.map(user => ({

@@ -1,8 +1,8 @@
 import Button from "./Button";
-import Input from "./Input";
+import InputField from "./InputField";
 import Navbar from "./Navbar";
 export {
   Button,
-  Input,
+  InputField,
   Navbar
 }
